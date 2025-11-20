@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AxiomRoot • RootFinder Unified</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjs@11.6.0/lib/browser/math.min.js"></script>
+  <style>
+    :root {
+      --bg-light: #f6f8fb; --bg-dark: #0b1020;
+      --card-light: #ffffff; --card-dark: #1e293b;
+      --text-light: #0b1020; --text-dark: #e2e8f0;
+      --brand: #2563eb; --brand-2: #06b6d4;
+    }
+    body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg-light); color: var(--text-light); transition: background .3s, color .3s; }
+    body.dark { background: var(--bg-dark); color: var(--text-dark); }
+    .card { background: var(--card-light); border-radius: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,.05); transition: box-shadow .2s, background .3s; }
+    body.dark .card { background: var(--card-dark); }
+    .btn { font-weight: 500; border-radius: .75rem; transition: all .2s; }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
+    input, select { border-radius: .75rem; border: 1px solid #e2e8f0; padding: .6rem 1rem; transition: box-shadow .2s; }
+    input:focus, select:focus { outline: none; box-shadow: 0 0 0 3px rgba(37,99,235,.3); }
+    .brand-grad { background: linear-gradient(135deg, var(--brand), var(--brand-2)); }
+    .table-sticky thead { position: sticky; top: 0; background: #f8fafc; box-shadow: 0 2px 4px rgba(0,0,0,.03); }
+    tbody tr:hover { background-color: #f1f5f9; }
+    .highlight-row { background: rgba(34,197,94,.12) !important; }
+    .spinner{ width:36px; height:36px; border:3px solid #e2e8f0; border-top-color:#3b82f6; border-radius:9999px; animation: spin 1s linear infinite; }
+    @keyframes spin{ to{ transform: rotate(360deg);} }
+    .calc-btn{ font-size:.875rem; padding:.5rem; border-radius:.5rem; background:#e2e8f0; transition: background .15s, transform .15s; }
+    .calc-btn:hover{ background:#cbd5e1; transform: translateY(-1px); }
+    body.dark .calc-btn{ background:#334155; color:#e2e8f0; }
+    body.dark .calc-btn:hover{ background:#475569; }
+    .chip{ background:#f1f5f9; color:#334155; border-radius:9999px; padding:.25rem .6rem; font-size:.75rem; }
+    body.dark .chip{ background:#0f172a; color:#cbd5e1; }
+    .display{ font-family: ui-monospace, Menlo, Monaco, Consolas, "Courier New", monospace; }
+  </style>
+</head>
+<body class="min-h-screen">
+  <!-- Header -->
+  <header class="bg-white/90 backdrop-blur border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="h-10 w-10 rounded-xl brand-grad flex items-center justify-center text-white font-bold">AR</div>
+        <div>
+          <h1 class="text-xl font-extrabold tracking-tight">AxiomRoot <span class="text-slate-400 text-sm font-medium">• RootFinder Unified</span></h1>
+          <p class="text-[11px] text-slate-500 -mt-1">Created by <span class="font-semibold text-slate-700">Mustafa Muhammad</span></p>
+        </div>
+      </div>
+      <button id="themeToggle" class="btn px-3 py-2 border border-slate-200 text-slate-700">🌙 Dark mode</button>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="grid lg:grid-cols-3 gap-6">
+      <!-- Function console with left-side calculator -->
+      <section class="card p-5">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-lg font-semibold">Function Console</h2>
+          <span class="chip">Build expressions</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Left: Calculator -->
+          <div class="grid grid-cols-4 gap-2">
+            <button class="calc-btn" onclick="insert('sin(')">sin</button>
+            <button class="calc-btn" onclick="insert('cos(')">cos</button>
+            <button class="calc-btn" onclick="insert('tan(')">tan</button>
+            <button class="calc-btn" onclick="insert('abs(')">|x|</button>
+            <button class="calc-btn" onclick="insert('ln(')">ln</button>
+            <button class="calc-btn" onclick="insert('log10(')">log</button>
+            <button class="calc-btn" onclick="insert('π')">π</button>
+            <button class="calc-btn" onclick="insert('e')">e</button>
+            <button class="calc-btn" onclick="insert('^')">^</button>
+            <button class="calc-btn" onclick="insert('(')">(</button>
+            <button class="calc-btn" onclick="insert(')')">)</button>
+            <button class="calc-btn" onclick="insert('x')">x</button>
+            <button class="calc-btn" onclick="insert('+')">+</button>
+            <button class="calc-btn" onclick="insert('-')">−</button>
+            <button class="calc-btn" onclick="insert('*')">×</button>
+            <button class="calc-btn" onclick="insert('/')">÷</button>
+            <button class="calc-btn" onclick="insert('.')">.</button>
+            <button class="calc-btn" onclick="insert(',')">,</button>
+            <button class="calc-btn" onclick="insert('7')">7</button>
+            <button class="calc-btn" onclick="insert('8')">8</button>
+            <button class="calc-btn" onclick="insert('9')">9</button>
+            <button class="calc-btn" onclick="insert('4')">4</button>
+            <button class="calc-btn" onclick="insert('5')">5</button>
+            <button class="calc-btn" onclick="insert('6')">6</button>
+            <button class="calc-btn" onclick="insert('1')">1</button>
+            <button class="calc-btn" onclick="insert('2')">2</button>
+            <button class="calc-btn" onclick="insert('3')">3</button>
+            <button class="calc-btn col-span-2" onclick="insert('0')">0</button>
+          </div>
+          <!-- Right: Input + method + clear -->
+          <div class="space-y-3">
+            <input id="expr" class="w-full display bg-white border border-slate-200 rounded-xl px-3 py-2" placeholder="e.g., x^3-2*x-5" />
+            <label class="text-xs text-slate-600">Method</label>
+            <select id="method" class="w-full px-3 py-2 rounded-xl border border-slate-200">
+              <option value="bisection">Bisection</option>
+              <option value="falsePosition">False Position</option>
+              <option value="secant">Secant</option>
+            </select>
+            <button id="clearExpr" class="btn px-3 py-2 bg-slate-900 text-white w-full">Clear</button>
+            <div class="mt-2 text-xs text-slate-600">
+              <p class="mb-1"><strong>Quick inserts:</strong></p>
+              <div class="flex flex-wrap gap-2">
+                <button class="calc-btn" onclick="setExpr('x^3 - 2*x - 5')">x³ - 2x - 5</button>
+                <button class="calc-btn" onclick="setExpr('sin(x) - 0.5')">sin(x) - 0.5</button>
+                <button class="calc-btn" onclick="setExpr('log10(x) - 2')">log(x) - 2</button>
+                <button class="calc-btn" onclick="setExpr('ln(x) - 1')">ln(x) - 1</button>
+                <button class="calc-btn" onclick="setExpr('sin(x) - e^-x')">sin(x) - e^-x</button>
+              </div>
+              <p class="mt-2 text-slate-500">Note: Radians. ln = natural log, log = base-10.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Parameters & Output -->
+      <section class="lg:col-span-2 space-y-6">
+        <!-- Parameters -->
+        <div class="card p-5">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold">Parameters</h2>
+          </div>
+          <div class="grid md:grid-cols-5 gap-3">
+            <label class="block" for="a">
+              <span class="text-xs text-slate-600">Lower bound (a)</span>
+              <input id="a" type="number" step="any" placeholder="1" class="w-full mt-1 px-3 py-2 rounded-xl bg-white border border-slate-200" />
+            </label>
+            <label class="block" for="b">
+              <span class="text-xs text-slate-600">Upper bound (b)</span>
+              <input id="b" type="number" step="any" placeholder="3" class="w-full mt-1 px-3 py-2 rounded-xl bg-white border border-slate-200" />
+            </label>
+            <label class="block" for="tol">
+              <span class="text-xs text-slate-600">Tolerance</span>
+              <input id="tol" type="number" min="0" step="0.0000000001" value="0.0001" class="w-full mt-1 px-3 py-2 rounded-xl bg-white border border-slate-200" />
+            </label>
+            <label class="block" for="maxit">
+              <span class="text-xs text-slate-600">Max iterations</span>
+              <input id="maxit" type="number" min="1" step="1" value="100" class="w-full mt-1 px-3 py-2 rounded-xl bg-white border border-slate-200" />
+            </label>
+            <div class="flex items-end">
+              <button id="calc" class="btn w-full py-3 rounded-xl text-white brand-grad">Calculate</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary -->
+        <div id="summaryCard" class="hidden card p-5">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold">Results</h3>
+            <span id="iterCount" class="chip">0 iterations</span>
+          </div>
+          <div class="grid sm:grid-cols-3 gap-3">
+            <div class="rounded-xl border border-slate-200 p-4 bg-white">
+              <p class="text-[11px] text-slate-500">Root</p>
+              <p id="rootVal" class="display text-2xl text-slate-900"></p>
+            </div>
+            <div class="rounded-xl border border-slate-200 p-4 bg-white">
+              <p class="text-[11px] text-slate-500">f(root)</p>
+              <p id="fRoot" class="display text-2xl text-slate-900"></p>
+            </div>
+            <div class="rounded-xl border border-slate-200 p-4 bg-white">
+              <p class="text-[11px] text-slate-500">Final Error</p>
+              <p id="errVal" class="display text-2xl text-slate-900"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div id="tableCard" class="hidden card p-5">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="font-semibold">Iteration Details</h3>
+            <div class="flex gap-2">
+              <button id="exportBtn" class="btn px-3 py-1 rounded-lg border border-slate-200 bg-slate-100" disabled>Export</button>
+            </div>
+          </div>
+          <div class="overflow-x-auto max-h-[420px] overflow-y-auto rounded-xl border border-slate-200 table-sticky">
+            <table class="min-w-full text-sm">
+              <thead class="text-slate-700" id="tableHead"></thead>
+              <tbody id="tbody" class="divide-y divide-slate-200"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Loader -->
+        <div id="loader" class="hidden fixed inset-0 bg-black/25 backdrop-blur-sm flex items-center justify-center z-50">
+          <div class="card p-6 flex items-center gap-3">
+            <div class="spinner"></div>
+            <p class="text-slate-700 dark:text-slate-200">Computing…</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="mt-8 text-center text-xs text-slate-500">© AxiomRoot — Unified RootFinder by <span class="text-slate-700 font-medium">Mustafa Muhammad</span></footer>
+  </main>
+
+  <script>
+    // ===== Helpers
+    const $ = (id) => document.getElementById(id);
+    function formatDecimal(v){ if(!isFinite(v)) return String(v); return Number.parseFloat(Number(v).toFixed(10)); }
+
+    // Insert / quick set / clear
+    function insert(text) {
+      const input = $('expr');
+      const start = input.selectionStart ?? input.value.length;
+      const end = input.selectionEnd ?? input.value.length;
+      const before = input.value.substring(0, start);
+      const after = input.value.substring(end);
+      input.value = before + text + after;
+      input.focus();
+      const newPos = start + text.length;
+      input.selectionStart = input.selectionEnd = newPos;
+    }
+    function setExpr(expr) { $('expr').value = expr; }
+    $('clearExpr').addEventListener('click', () => { $('expr').value = ''; });
+
+    // Theme toggle
+    const themeBtn = $('themeToggle');
+    const savedTheme = localStorage.getItem('axiom-theme') || 'light';
+    setTheme(savedTheme);
+    themeBtn.addEventListener('click', () => {
+      const next = (document.documentElement.dataset.theme === 'light') ? 'dark' : 'light';
+      setTheme(next);
+    });
+    function setTheme(mode){
+      document.documentElement.dataset.theme = mode;
+      document.body.classList.toggle('dark', mode==='dark');
+      themeBtn.textContent = (mode === 'light') ? '🌙 Dark mode' : '☀️ Light mode';
+      localStorage.setItem('axiom-theme', mode);
+    }
+
+    // ===== Algorithms (unchanged)
+    function bisection(fn, a, b, tol, maxit){
+      let fa = fn.evaluate({x:a}), fb = fn.evaluate({x:b});
+      if(fa*fb >= 0) throw new Error("f(a) and f(b) must have opposite signs");
+      let iterations = [], c=a, fc=fa, err=Math.abs(b-a), n=0;
+      while(err>tol && n<maxit){
+        n++; c=(a+b)/2; fc=fn.evaluate({x:c}); err=(b-a)/2;
+        iterations.push({n,a,b,c,fc,err});
+        if(fa*fc<0){ b=c; fb=fc; } else { a=c; fa=fc; }
+      }
+      return { root:c, froot:fc, err, iterations };
+    }
+    function falsePosition(fn, a, b, tol, maxit){
+      let fa = fn.evaluate({x:a}), fb = fn.evaluate({x:b});
+      if(fa*fb >= 0) throw new Error("f(a) and f(b) must have opposite signs");
+      let iterations=[], c=a, fc=fa, prevC=a, n=0;
+      while(n<maxit){
+        n++; c=(a*fb - b*fa)/(fb-fa); fc=fn.evaluate({x:c});
+        let err=Math.abs(c-prevC);
+        iterations.push({n,a,b,fa,fb,c,fc,err});
+        if(Math.abs(fc)<tol || err<tol) break;
+        if(fa*fc<0){ b=c; fb=fc; } else { a=c; fa=fc; }
+        prevC=c;
+      }
+      return { root:c, froot:fc, err:Math.abs(c-prevC), iterations };
+    }
+    function secant(fn, a, b, tol, maxit){
+      let fa = fn.evaluate({x:a}), fb = fn.evaluate({x:b});
+      let iterations=[], c=a, fc=fa, prevC=a, n=0;
+      while(n<maxit){
+        n++; c = b - fb * (b - a) / (fb - fa); fc = fn.evaluate({x:c});
+        let err = Math.abs(c - prevC);
+        iterations.push({n,a,b,fa,fb,c,fc,err});
+        if(Math.abs(fc)<tol || err<tol) break;
+        a = b; fa = fb; b = c; fb = fc; prevC = c;
+      }
+      return { root:c, froot:fc, err:Math.abs(c-prevC), iterations };
+    }
+
+    // ===== Calculate handler
+    $('calc').addEventListener('click', ()=>{
+      const funcStr = $('expr').value.trim();
+      const a = parseFloat($('a').value), b = parseFloat($('b').value);
+      const tol = parseFloat($('tol').value), maxit = parseInt(($('maxit').value||'100'),10);
+      const method = $('method').value;
+      if(!funcStr || Number.isNaN(a) || Number.isNaN(b) || Number.isNaN(tol) || Number.isNaN(maxit)) {
+        alert('Please provide f(x), a, b, tolerance, and max iterations.');
+        return;
+      }
+      if(a>=b){ alert('Require a < b.'); return; }
+      $('loader').classList.remove('hidden');
+      setTimeout(()=>{
+        try{
+          const fn = math.compile(funcStr);
+          let res;
+          if(method==="bisection") res = bisection(fn,a,b,tol,maxit);
+          else if(method==="falsePosition") res = falsePosition(fn,a,b,tol,maxit);
+          else res = secant(fn,a,b,tol,maxit);
+          renderResults(res, method);
+        }catch(e){ alert('Error: ' + e.message); }
+        $('loader').classList.add('hidden');
+      }, 60);
+    });
+
+    // ===== Render + Export
+    function renderResults(res, method){
+      $('summaryCard').classList.remove('hidden');
+      $('tableCard').classList.remove('hidden');
+      $('rootVal').textContent = formatDecimal(res.root);
+      $('fRoot').textContent = formatDecimal(res.froot);
+      $('errVal').textContent = formatDecimal(res.err);
+      $('iterCount').textContent = `${res.iterations.length} iterations`;
+
+      const tbody = $('tbody'); tbody.innerHTML = '';
+      const thead = $('tableHead');
+
+      if(method === "bisection"){
+        thead.innerHTML = `<tr>
+          <th class="px-3 py-2 text-center">Iter</th>
+          <th class="px-3 py-2 text-center">x₁</th>
+          <th class="px-3 py-2 text-center">x₂</th>
+          <th class="px-3 py-2 text-center">xₘᵢ𝒹</th>
+          <th class="px-3 py-2 text-center">f(xₘᵢ𝒹)</th>
+          <th class="px-3 py-2 text-center">Error</th>
+        </tr>`;
+        for(const it of res.iterations){
+          const tr = document.createElement('tr');
+          tr.className = 'odd:bg-white even:bg-slate-50';
+          tr.innerHTML = `
+            <td class="px-3 py-2 text-center">${it.n}</td>
+            <td class="px-3 py-2 text-center">${formatDecimal(it.a)}</td>
+            <td class="px-3 py-2 text-center">${formatDecimal(it.b)}</td>
+            <td class="px-3 py-2 text-center font-medium text-blue-700">${formatDecimal(it.c)}</td>
+            <td class="px-3 py-2 text-center">${formatDecimal(it.fc)}</td>
+            <td class="px-3 py-2 text-center">${formatDecimal(it.err)}</td>`;
+          tbody.appendChild(tr);
+        }
+      } else if (method === "falsePosition"){
+        thead.innerHTML = `<tr>
+          <th class="px-3 py-2 text-center">Iter</th>
+          <th class="px-3 py-2 text-center">x₁</th>
+          <th class="px-3 py-2 text-center">x₂</th>
+          <th class="px-3 py-2 text-center">f(x₁)</th>
+          <th class="px-3 py-2 text-center">f(x₂)</th>
+          <th class="px-3 py-2 text-center">x₃</th>
+          <th class="px-3 py-2 text-center">f(x₃)</th>
+          <th class="px-3 py-2 text-center">Error</th>
+        </tr>`;
+        for(const it of res.iterations){
+          const isConverged = Math.abs(it.fc) < parseFloat($('tol').value);
+          const tr = document.createElement('tr');
+          tr.className = `odd:bg-white even:bg-slate-50 ${isConverged ? 'highlight-row' : ''}`;
+          tr.innerHTML = `
+            <td class="px-3 py-2 text-center">${it.n}</td>
+            <td class="px-3 py-2 text-center">${formatDecimal(it.a)}</td>
+            <td class="px-3 py-2 text-center">${formatDecimal(it.b)}</td>
+            <td class="px-3 py-2 text-center">${formatDecimal(it.fa)}</td>
+            <td class="px-3 py-2 text-center">${formatDecimal(it.fb)}</td>
+            <td class="px-3 py-2 text-center font-medium text-blue-700">${formatDecimal(it.c)}</td>
+            <td class="px-3 py-2 text-center ${isConverged ? 'font-bold text-green-700' : ''}">${formatDecimal(it.fc)}</td>
+            <td class="px-3 py-2 text-center">${formatDecimal(it.err)}</td>`;
+          tbody.appendChild(tr);
+        }
+      } else if (method === "secant"){
+        thead.innerHTML = `<tr>
+          <th class="px-3 py-2 text-center">Iter</th>
+          <th class="px-3 py-2 text-center">x₁</th>
+          <th class="px-3 py-2 text-center">x₂</th>
+          <th class="px-3 py-2 text-center">f(x₁)</th>
+          <th class="px-3 py-2 text-center">f(x₂)</th>
+          <th class="px-3 py-2 text-center">x₃</th>
+          <th class="px-3 py-2 text-center">f(x₃)</th>
+          <th class="px-3 py-2 text-center">Error</th>
+        </tr>`;
+        for(const it of res.iterations){
+          const isConverged = Math.abs(it.fc) < parseFloat($('tol').value);
+          const tr = document.createElement('tr');
+          tr.className = `odd:bg-white even:bg-slate-50 ${isConverged ? 'highlight-row' : ''}`;
+          tr.innerHTML = `
+            <td class="px-3 py-2 text-center">${it.n}</td>
+            <td class="px-3 py-2 text-center">${formatDecimal(it.a)}</td>
+            <td class="px-3 py-2 text-center">${formatDecimal(it.b)}</td>
+            <td class="px-3 py-2 text-center">${formatDecimal(it.fa)}</td>
+            <td class="px-3 py-2 text-center">${formatDecimal(it.fb)}</td>
+            <td class="px-3 py-2 text-center font-medium text-blue-700">${formatDecimal(it.c)}</td>
+            <td class="px-3 py-2 text-center ${isConverged ? 'font-bold text-green-700' : ''}">${formatDecimal(it.fc)}</td>
+            <td class="px-3 py-2 text-center">${formatDecimal(it.err)}</td>`;
+          tbody.appendChild(tr);
+        }
+      }
+
+      const exportBtn = $('exportBtn');
+      exportBtn.disabled = false;
+      exportBtn.onclick = ()=> exportToCSV(res, method);
+
+      document.getElementById('summaryCard').scrollIntoView({behavior:'smooth', block:'start'});
+    }
+
+    function exportToCSV(res, method){
+      let rows = [];
+      if(method === "bisection"){
+        rows.push(["Iter","x1","x2","xmid","f(xmid)","Error"]);
+        res.iterations.forEach(it=> rows.push([it.n,it.a,it.b,it.c,it.fc,it.err]));
+      } else if(method === "falsePosition"){
+        rows.push(["Iter","x1","x2","f(x1)","f(x2)","x3","f(x3)","Error"]);
+        res.iterations.forEach(it=> rows.push([it.n,it.a,it.b,it.fa,it.fb,it.c,it.fc,it.err]));
+      } else if(method === "secant"){
+        rows.push(["Iter","x0","x1","f(x0)","f(x1)","x2","f(x2)","Error"]);
+        res.iterations.forEach(it=> rows.push([it.n,it.a,it.b,it.fa,it.fb,it.c,it.fc,it.err]));
+      }
+      const csvContent = "data:text/csv;charset=utf-8," + rows.map(r => r.map(v => formatDecimal(v)).join(",")).join("\n");
+      const link = document.createElement("a");
+      link.href = encodeURI(csvContent);
+      link.download = `rootfinder_${method}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>
