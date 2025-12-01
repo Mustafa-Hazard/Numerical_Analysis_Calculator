@@ -6,13 +6,17 @@
   <title>AxiomRoot • SZABIST RootFinder</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjs@11.6.0/lib/browser/math.min.js"></script>
+  <!-- MathJax for live rendered preview -->
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <!-- Chart.js for Error vs Iteration plot -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
       /* SZABIST-inspired palette */
       --bg-light: #f3f6fb;
       --bg-dark: #020617;
       --card-light: #ffffff;
-      --card-dark: #0b1120; 
+      --card-dark: #0b1120;
       --text-light: #020617;
       --text-dark: #e5e7eb;
       --brand: #0054a6;   /* SZABIST blue */
@@ -174,12 +178,23 @@
       color:#e5e7eb;
     }
 
+    /* status color variants for chip */
+    .status-success {
+      background: linear-gradient(135deg,#16a34a,#22c55e) !important;
+    }
+    .status-warning {
+      background: linear-gradient(135deg,#f59e0b,#fbbf24) !important;
+    }
+    .status-error {
+      background: linear-gradient(135deg,#dc2626,#ef4444) !important;
+    }
+
     .display {
       font-family: ui-monospace, Menlo, Monaco, Consolas, "Courier New", monospace;
       letter-spacing: .02em;
     }
 
-    .result-box {
+ .result-box {
       background: linear-gradient(135deg, #011529, #ffffff);
       border: 2px solid #000000;
       transition: all .3s;
@@ -194,6 +209,17 @@
     }
     body.dark .result-box:hover {
       border-color: var(--brand-2);
+    }
+
+    /* error color for Final Error */
+    .err-good {
+      color:#16a34a !important;
+    }
+    .err-mid {
+      color:#f97316 !important;
+    }
+    .err-bad {
+      color:#dc2626 !important;
     }
 
     header {
@@ -229,6 +255,12 @@
       background: rgba(15,23,42,.85);
       border-color: #1d4ed8;
       color: #e5e7eb;
+    }
+
+    /* Chart container for error plot */
+    .chart-container {
+      position: relative;
+      height: 260px;
     }
   </style>
 </head>
@@ -293,13 +325,26 @@
             <button class="calc-btn" onclick="insert('3')">3</button>
             <button class="calc-btn col-span-2" onclick="insert('0')">0</button>
           </div>
-          <!-- Right: Input + method + clear -->
+          <!-- Right: Input + preview + method + clear -->
           <div class="space-y-3">
             <input
               id="expr"
               class="w-full display bg-white border-2 border-slate-200 rounded-xl px-4 py-4 text-xl shadow-sm"
               placeholder="e.g., x^3 - 2*x - 5"
             />
+
+            <!-- Live preview block -->
+            <div class="mt-1 text-xs text-slate-600 space-y-1">
+              <p>
+                <strong>You typed:</strong>
+                <code id="typedExpr" class="ml-1 text-[11px] bg-slate-100 rounded px-2 py-1 display text-slate-800">—</code>
+              </p>
+              <p><strong>Rendered as:</strong></p>
+              <div id="renderedExpr" class="bg-slate-50 rounded px-3 py-2 min-h-[2.25rem] text-sm flex items-center">
+                <span class="text-slate-400 text-xs">Waiting for input…</span>
+              </div>
+            </div>
+
             <label class="text-xs text-slate-600">Method</label>
             <select id="method" class="w-full px-3 py-2 rounded-xl border border-slate-200">
               <option value="bisection">Bisection</option>
@@ -358,7 +403,7 @@
         <div id="summaryCard" class="hidden card p-5">
           <div class="flex items-center justify-between mb-3">
             <h3 class="font-semibold">Results</h3>
-            <span id="iterCount" class="chip">0 iterations</span>
+            <span id="iterCount" class="chip">Status</span>
           </div>
           <div class="grid sm:grid-cols-3 gap-3">
             <div class="rounded-xl result-box p-4">
@@ -376,7 +421,7 @@
           </div>
         </div>
 
-        <!-- Table -->
+        <!-- Table + Error Plot -->
         <div id="tableCard" class="hidden card p-5">
           <div class="flex items-center justify-between mb-2">
             <h3 class="font-semibold">Iteration Details</h3>
@@ -389,6 +434,17 @@
               <thead class="text-slate-700" id="tableHead"></thead>
               <tbody id="tbody" class="divide-y divide-slate-200"></tbody>
             </table>
+          </div>
+
+          <!-- Error vs Iteration Plot -->
+          <div class="mt-4">
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="text-sm font-semibold text-slate-700 dark:text-slate-200">Error vs Iteration</h4>
+              <span class="text-[11px] text-slate-500">y = method-specific error per step</span>
+            </div>
+            <div class="chart-container bg-slate-50 dark:bg-slate-900/40 rounded-xl px-3 py-2">
+              <canvas id="errorChart"></canvas>
+            </div>
           </div>
         </div>
 
@@ -410,9 +466,33 @@
 
   <script>
     const $ = (id) => document.getElementById(id);
+    let errorChart = null;
+
     function formatDecimal(v){
       if(!isFinite(v)) return String(v);
       return Number.parseFloat(Number(v).toFixed(10));
+    }
+
+    // Live math preview with MathJax
+    function updatePreview(){
+      const raw = $('expr').value.trim();
+      const typed = $('typedExpr');
+      const rendered = $('renderedExpr');
+
+      typed.textContent = raw || '—';
+      rendered.innerHTML = '';
+
+      if(!raw){
+        rendered.innerHTML = '<span class="text-slate-400 text-xs">Waiting for input…</span>';
+        return;
+      }
+
+      const latex = raw;
+      rendered.innerHTML = '\\(' + latex + '\\)';
+
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        MathJax.typesetPromise([rendered]).catch(err => console.error(err));
+      }
     }
 
     // Insert / quick set / clear
@@ -426,9 +506,20 @@
       input.focus();
       const newPos = start + text.length;
       input.selectionStart = input.selectionEnd = newPos;
+      updatePreview();
     }
-    function setExpr(expr) { $('expr').value = expr; }
-    $('clearExpr').addEventListener('click', () => { $('expr').value = ''; });
+    function setExpr(expr) {
+      $('expr').value = expr;
+      updatePreview();
+    }
+    $('clearExpr').addEventListener('click', () => {
+      $('expr').value = '';
+      updatePreview();
+    });
+
+    // Hook typing to preview
+    $('expr').addEventListener('input', updatePreview);
+    updatePreview();
 
     // Theme toggle
     const themeBtn = $('themeToggle');
@@ -445,7 +536,7 @@
       localStorage.setItem('axiom-theme', mode);
     }
 
-    // ===== Algorithms (unchanged math logic)
+    // ===== Algorithms (math logic unchanged)
     function bisection(fn, a, b, tol, maxit){
       let fa = fn.evaluate({x:a}), fb = fn.evaluate({x:b});
       if(fa*fb >= 0) throw new Error("f(a) and f(b) must have opposite signs");
@@ -557,14 +648,102 @@
       }, 60);
     });
 
-    // ===== Render + Export
+    // ===== Error chart update (Chart.js)
+    function updateErrorChart(iterations) {
+      const canvas = $('errorChart');
+      if (!canvas) return;
+
+      const labels = iterations.map(it => it.n);
+      const data = iterations.map(it => {
+        const v = Number(it.err);
+        return isFinite(v) ? v : NaN;
+      });
+
+      if (errorChart) {
+        errorChart.destroy();
+      }
+
+      errorChart = new Chart(canvas, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Error per iteration',
+            data,
+            borderWidth: 1.5,
+            pointRadius: 3,
+            tension: 0.15
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              title: { display: true, text: 'Iteration' }
+            },
+            y: {
+              title: { display: true, text: 'Error' },
+              beginAtZero: true
+            }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(context){
+                  const y = context.parsed.y;
+                  return 'Error: ' + formatDecimal(y);
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // ===== Render + Export with status + error color + chart
     function renderResults(res, method){
       $('summaryCard').classList.remove('hidden');
       $('tableCard').classList.remove('hidden');
       $('rootVal').textContent = formatDecimal(res.root);
       $('fRoot').textContent = formatDecimal(res.froot);
       $('errVal').textContent = formatDecimal(res.err);
-      $('iterCount').textContent = `${res.iterations.length} iterations`;
+
+      const tolVal = parseFloat($('tol').value);
+      const maxitVal = parseInt(($('maxit').value || '100'), 10);
+      const iterCount = res.iterations.length;
+
+      const statusEl = $('iterCount');
+      statusEl.classList.remove('status-success','status-warning','status-error');
+
+      let statusText = '';
+      if (!isFinite(res.root) || !isFinite(res.froot) || !isFinite(res.err)) {
+        statusText = '❌ Diverged / invalid result';
+        statusEl.classList.add('status-error');
+      } else if (iterCount >= maxitVal && res.err > tolVal) {
+        statusText = `⚠ Reached max iterations (${iterCount})`;
+        statusEl.classList.add('status-warning');
+      } else if (res.err <= tolVal) {
+        statusText = `✅ Converged in ${iterCount} iterations`;
+        statusEl.classList.add('status-success');
+      } else {
+        statusText = `⚠ Not fully converged (${iterCount} iters)`;
+        statusEl.classList.add('status-warning');
+      }
+      statusEl.textContent = statusText;
+
+      const errEl = $('errVal');
+      errEl.classList.remove('err-good','err-mid','err-bad');
+      if (!isFinite(res.err)) {
+        errEl.classList.add('err-bad');
+      } else if (res.err <= tolVal) {
+        errEl.classList.add('err-good');
+      } else if (res.err <= tolVal * 10) {
+        errEl.classList.add('err-mid');
+      } else {
+        errEl.classList.add('err-bad');
+      }
 
       const tbody = $('tbody'); tbody.innerHTML = '';
       const thead = $('tableHead');
@@ -611,6 +790,9 @@
           tbody.appendChild(tr);
         }
       }
+
+      // Update error chart
+      updateErrorChart(res.iterations);
 
       const exportBtn = $('exportBtn');
       exportBtn.disabled = false;
