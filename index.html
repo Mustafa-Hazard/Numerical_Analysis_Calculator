@@ -12,28 +12,46 @@
       --card-light: #ffffff; --card-dark: #1e293b;
       --text-light: #0b1020; --text-dark: #e2e8f0;
       --brand: #2563eb; --brand-2: #06b6d4;
+      --accent: #8b5cf6;
     }
     body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg-light); color: var(--text-light); transition: background .3s, color .3s; }
     body.dark { background: var(--bg-dark); color: var(--text-dark); }
-    .card { background: var(--card-light); border-radius: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,.05); transition: box-shadow .2s, background .3s; }
-    body.dark .card { background: var(--card-dark); }
-    .btn { font-weight: 500; border-radius: .75rem; transition: all .2s; }
-    .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
-    input, select { border-radius: .75rem; border: 1px solid #e2e8f0; padding: .6rem 1rem; transition: box-shadow .2s; }
-    input:focus, select:focus { outline: none; box-shadow: 0 0 0 3px rgba(37,99,235,.3); }
-    .brand-grad { background: linear-gradient(135deg, var(--brand), var(--brand-2)); }
-    .table-sticky thead { position: sticky; top: 0; background: #f8fafc; box-shadow: 0 2px 4px rgba(0,0,0,.03); }
-    tbody tr:hover { background-color: #f1f5f9; }
-    .highlight-row { background: rgba(34,197,94,.12) !important; }
-    .spinner{ width:36px; height:36px; border:3px solid #e2e8f0; border-top-color:#3b82f6; border-radius:9999px; animation: spin 1s linear infinite; }
+    .card { background: var(--card-light); border-radius: 1.25rem; box-shadow: 0 4px 24px rgba(0,0,0,.06); transition: all .3s; border: 1px solid rgba(226,232,240,.5); }
+    body.dark .card { background: var(--card-dark); border-color: rgba(51,65,85,.5); box-shadow: 0 4px 24px rgba(0,0,0,.2); }
+    .card:hover { box-shadow: 0 8px 32px rgba(0,0,0,.1); transform: translateY(-2px); }
+    body.dark .card:hover { box-shadow: 0 8px 32px rgba(0,0,0,.3); }
+    .btn { font-weight: 600; border-radius: .75rem; transition: all .2s; cursor: pointer; }
+    .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,.15); }
+    .btn:active:not(:disabled) { transform: translateY(0); }
+    input, select { border-radius: .75rem; border: 2px solid #e2e8f0; padding: .7rem 1rem; transition: all .2s; background: white; }
+    body.dark input, body.dark select { background: #1e293b; border-color: #334155; color: #e2e8f0; }
+    input:focus, select:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 4px rgba(37,99,235,.15); }
+    body.dark input:focus, body.dark select:focus { border-color: var(--brand-2); box-shadow: 0 0 0 4px rgba(6,182,212,.15); }
+    .brand-grad { background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%); box-shadow: 0 4px 16px rgba(37,99,235,.3); }
+    .brand-grad:hover { box-shadow: 0 6px 24px rgba(37,99,235,.4); }
+    .table-sticky thead { position: sticky; top: 0; background: #f8fafc; box-shadow: 0 2px 8px rgba(0,0,0,.04); z-index: 10; }
+    body.dark .table-sticky thead { background: #0f172a; }
+    tbody tr { transition: background .15s; }
+    tbody tr:hover { background-color: #f1f5f9 !important; }
+    body.dark tbody tr:hover { background-color: #1e293b !important; }
+    .highlight-row { background: rgba(34,197,94,.15) !important; }
+    body.dark .highlight-row { background: rgba(34,197,94,.25) !important; }
+    .spinner{ width:40px; height:40px; border:4px solid #e2e8f0; border-top-color:#3b82f6; border-radius:9999px; animation: spin 1s ease-in-out infinite; }
     @keyframes spin{ to{ transform: rotate(360deg);} }
-    .calc-btn{ font-size:.875rem; padding:.5rem; border-radius:.5rem; background:#e2e8f0; transition: background .15s, transform .15s; }
-    .calc-btn:hover{ background:#cbd5e1; transform: translateY(-1px); }
+    .calc-btn{ font-size:.875rem; padding:.6rem; border-radius:.6rem; background:#e2e8f0; transition: all .15s; font-weight: 500; cursor: pointer; }
+    .calc-btn:hover{ background:#cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 6px rgba(0,0,0,.08); }
+    .calc-btn:active{ transform: translateY(0); }
     body.dark .calc-btn{ background:#334155; color:#e2e8f0; }
     body.dark .calc-btn:hover{ background:#475569; }
-    .chip{ background:#f1f5f9; color:#334155; border-radius:9999px; padding:.25rem .6rem; font-size:.75rem; }
-    body.dark .chip{ background:#0f172a; color:#cbd5e1; }
+    .chip{ background: linear-gradient(135deg, #f1f5f9, #e2e8f0); color:#334155; border-radius:9999px; padding:.35rem .75rem; font-size:.75rem; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,.05); }
+    body.dark .chip{ background: linear-gradient(135deg, #1e293b, #334155); color:#cbd5e1; }
     .display{ font-family: ui-monospace, Menlo, Monaco, Consolas, "Courier New", monospace; }
+    .result-box { background: linear-gradient(135deg, #f8fafc, #f1f5f9); border: 2px solid #e2e8f0; transition: all .3s; }
+    .result-box:hover { border-color: var(--brand); box-shadow: 0 4px 12px rgba(37,99,235,.1); }
+    body.dark .result-box { background: linear-gradient(135deg, #1e293b, #0f172a); border-color: #334155; }
+    body.dark .result-box:hover { border-color: var(--brand-2); }
+    header { transition: all .3s; }
+    body.dark header { background: rgba(15,23,42,.9) !important; border-color: rgba(51,65,85,.5) !important; }
   </style>
 </head>
 <body class="min-h-screen">
@@ -54,21 +72,22 @@
   <!-- Main -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
     <div class="grid lg:grid-cols-3 gap-6">
-      <!-- Function console with left-side calculator -->
+      <!-- Function console -->
       <section class="card p-5">
         <div class="flex items-center justify-between mb-3">
           <h2 class="text-lg font-semibold">Function Console</h2>
           <span class="chip">Build expressions</span>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Left: Calculator -->
+          <!-- Calculator -->
           <div class="grid grid-cols-4 gap-2">
             <button class="calc-btn" onclick="insert('sin(')">sin</button>
             <button class="calc-btn" onclick="insert('cos(')">cos</button>
             <button class="calc-btn" onclick="insert('tan(')">tan</button>
             <button class="calc-btn" onclick="insert('abs(')">|x|</button>
             <button class="calc-btn" onclick="insert('ln(')">ln</button>
-            <button class="calc-btn" onclick="insert('log10(')">log</button>
+            <button class="calc-btn" onclick="insert('log(')">log</button>
+                        <button class="calc-btn" onclick="insert('log10(')">log</button>
             <button class="calc-btn" onclick="insert('π')">π</button>
             <button class="calc-btn" onclick="insert('e')">e</button>
             <button class="calc-btn" onclick="insert('^')">^</button>
@@ -94,12 +113,14 @@
           </div>
           <!-- Right: Input + method + clear -->
           <div class="space-y-3">
-            <input id="expr" class="w-full display bg-white border border-slate-200 rounded-xl px-3 py-2" placeholder="e.g., x^3-2*x-5" />
+            <input id="expr" class="w-full display-xl bg-white border border-slate-200 rounded-xl px-3 py-2" placeholder="e.g., x^3-2*x-5" />
             <label class="text-xs text-slate-600">Method</label>
             <select id="method" class="w-full px-3 py-2 rounded-xl border border-slate-200">
               <option value="bisection">Bisection</option>
+              <option value="fixedPoint">Fixed Point Iteration</option>
               <option value="falsePosition">False Position</option>
               <option value="secant">Secant</option>
+              <option value="newton">Newton</option>
             </select>
             <button id="clearExpr" class="btn px-3 py-2 bg-slate-900 text-white w-full">Clear</button>
             <div class="mt-2 text-xs text-slate-600">
@@ -126,7 +147,7 @@
           </div>
           <div class="grid md:grid-cols-5 gap-3">
             <label class="block" for="a">
-              <span class="text-xs text-slate-600">Lower bound (a)</span>
+              <span class="text-xs text-slate-600">Lower bound (a) / Initial guess</span>
               <input id="a" type="number" step="any" placeholder="1" class="w-full mt-1 px-3 py-2 rounded-xl bg-white border border-slate-200" />
             </label>
             <label class="block" for="b">
@@ -198,8 +219,7 @@
     <footer class="mt-8 text-center text-xs text-slate-500">© AxiomRoot — Unified RootFinder by <span class="text-slate-700 font-medium">Mustafa Muhammad</span></footer>
   </main>
 
-  <script>
-    // ===== Helpers
+    <script>
     const $ = (id) => document.getElementById(id);
     function formatDecimal(v){ if(!isFinite(v)) return String(v); return Number.parseFloat(Number(v).toFixed(10)); }
 
@@ -233,7 +253,7 @@
       localStorage.setItem('axiom-theme', mode);
     }
 
-    // ===== Algorithms (unchanged)
+    // ===== Algorithms
     function bisection(fn, a, b, tol, maxit){
       let fa = fn.evaluate({x:a}), fb = fn.evaluate({x:b});
       if(fa*fb >= 0) throw new Error("f(a) and f(b) must have opposite signs");
@@ -245,6 +265,19 @@
       }
       return { root:c, froot:fc, err, iterations };
     }
+    function fixedPoint(fn, a, tol, maxit){
+  let x = a, iterations=[], n=0, err=Infinity;
+  while(n<maxit && err>tol){
+    n++;
+    const xnext = fn.evaluate({x});
+    err = Math.abs(xnext - x);
+    iterations.push({n,x,xnext,err});
+    x = xnext;
+  }
+  const froot = fn.evaluate({x});
+  return { root:x, froot, err, iterations };
+}
+
     function falsePosition(fn, a, b, tol, maxit){
       let fa = fn.evaluate({x:a}), fb = fn.evaluate({x:b});
       if(fa*fb >= 0) throw new Error("f(a) and f(b) must have opposite signs");
@@ -271,28 +304,54 @@
       }
       return { root:c, froot:fc, err:Math.abs(c-prevC), iterations };
     }
+   function newton(fn, exprStr, a, tol, maxit){
+  const derivativeNode = math.derivative(exprStr, 'x');
+  const derivative = derivativeNode.compile();
+  let x = a, fx = fn.evaluate({x}), iterations=[], n=0, err=Infinity;
+  while(n<maxit && err>tol){
+    n++;
+    const dfx = derivative.evaluate({x});
+    if(dfx === 0) throw new Error("Derivative is zero, cannot continue Newton's method");
+    const xnext = x - fx/dfx;
+    const fxnext = fn.evaluate({x:xnext});
+    err = Math.abs(xnext - x);
+    iterations.push({n,x,fx,dfx,xnext,fxnext,err});
+    x = xnext; fx = fxnext;
+  }
+  return { root:x, froot:fx, err, iterations };
+}
+
 
     // ===== Calculate handler
-    $('calc').addEventListener('click', ()=>{
+    $('calc').addEventListener('click', ()=> {
       const funcStr = $('expr').value.trim();
+      const correctedFuncStr = funcStr.replace(/\bln\(/g, 'log(');
       const a = parseFloat($('a').value), b = parseFloat($('b').value);
-      const tol = parseFloat($('tol').value), maxit = parseInt(($('maxit').value||'100'),10);
+      const tol = parseFloat($('tol').value), maxit = parseInt(($('maxit').value || '100'), 10);
       const method = $('method').value;
-      if(!funcStr || Number.isNaN(a) || Number.isNaN(b) || Number.isNaN(tol) || Number.isNaN(maxit)) {
-        alert('Please provide f(x), a, b, tolerance, and max iterations.');
+
+      if (!funcStr || Number.isNaN(a) || Number.isNaN(tol) || Number.isNaN(maxit)) {
+        alert('Please provide f(x), initial guess/bounds, tolerance, and max iterations.');
         return;
       }
-      if(a>=b){ alert('Require a < b.'); return; }
+      if ((method!=="newton") && a >= b) {
+        alert('Require a < b for interval methods.');
+        return;
+      }
+
       $('loader').classList.remove('hidden');
-      setTimeout(()=>{
-        try{
-          const fn = math.compile(funcStr);
+      setTimeout(() => {
+        try {
+          const fn = math.compile(correctedFuncStr);
           let res;
-          if(method==="bisection") res = bisection(fn,a,b,tol,maxit);
-          else if(method==="falsePosition") res = falsePosition(fn,a,b,tol,maxit);
-          else res = secant(fn,a,b,tol,maxit);
+          if (method === "bisection") res = bisection(fn, a, b, tol, maxit);
+          else if (method === "falsePosition") res = falsePosition(fn, a, b, tol, maxit);
+          else if (method === "secant") res = secant(fn, a, b, tol, maxit);
+          else if (method === "newton") res = newton(fn, correctedFuncStr, a, tol, maxit);
           renderResults(res, method);
-        }catch(e){ alert('Error: ' + e.message); }
+        } catch (e) {
+          alert('Error: ' + e.message);
+        }
         $('loader').classList.add('hidden');
       }, 60);
     });
@@ -310,76 +369,46 @@
       const thead = $('tableHead');
 
       if(method === "bisection"){
-        thead.innerHTML = `<tr>
-          <th class="px-3 py-2 text-center">Iter</th>
-          <th class="px-3 py-2 text-center">x₁</th>
-          <th class="px-3 py-2 text-center">x₂</th>
-          <th class="px-3 py-2 text-center">xₘᵢ𝒹</th>
-          <th class="px-3 py-2 text-center">f(xₘᵢ𝒹)</th>
-          <th class="px-3 py-2 text-center">Error</th>
-        </tr>`;
+        thead.innerHTML = `<tr><th>Iter</th><th>x₁</th><th>x₂</th><th>xₘᵢ𝒹</th><th>f(xₘᵢ𝒹)</th><th>Error</th></tr>`;
         for(const it of res.iterations){
           const tr = document.createElement('tr');
-          tr.className = 'odd:bg-white even:bg-slate-50';
-          tr.innerHTML = `
-            <td class="px-3 py-2 text-center">${it.n}</td>
-            <td class="px-3 py-2 text-center">${formatDecimal(it.a)}</td>
-            <td class="px-3 py-2 text-center">${formatDecimal(it.b)}</td>
-            <td class="px-3 py-2 text-center font-medium text-blue-700">${formatDecimal(it.c)}</td>
-            <td class="px-3 py-2 text-center">${formatDecimal(it.fc)}</td>
-            <td class="px-3 py-2 text-center">${formatDecimal(it.err)}</td>`;
+          tr.innerHTML = `<td>${it.n}</td><td>${formatDecimal(it.a)}</td><td>${formatDecimal(it.b)}</td><td>${formatDecimal(it.c)}</td><td>${formatDecimal(it.fc)}</td><td>${formatDecimal(it.err)}</td>`;
           tbody.appendChild(tr);
         }
-      } else if (method === "falsePosition"){
-        thead.innerHTML = `<tr>
-          <th class="px-3 py-2 text-center">Iter</th>
-          <th class="px-3 py-2 text-center">x₁</th>
-          <th class="px-3 py-2 text-center">x₂</th>
-          <th class="px-3 py-2 text-center">f(x₁)</th>
-          <th class="px-3 py-2 text-center">f(x₂)</th>
-          <th class="px-3 py-2 text-center">x₃</th>
-          <th class="px-3 py-2 text-center">f(x₃)</th>
-          <th class="px-3 py-2 text-center">Error</th>
-        </tr>`;
+   
+
+        
+      } 
+         else if(method === "fixedPoint"){
+  thead.innerHTML = `<tr><th>Iter</th><th>xₙ</th><th>xₙ₊₁</th><th>Error</th></tr>`;
+  for(const it of res.iterations){
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${it.n}</td>
+      <td>${formatDecimal(it.x)}</td>
+      <td class="font-medium text-blue-700">${formatDecimal(it.xnext)}</td>
+      <td>${formatDecimal(it.err)}</td>`;
+    tbody.appendChild(tr);
+  }
+}
+ else if(method === "falsePosition" || method === "secant"){
+        thead.innerHTML = `<tr><th>Iter</th><th>x₁</th><th>x₂</th><th>f(x₁)</th><th>f(x₂)</th><th>x₃</th><th>f(x₃)</th><th>Error</th></tr>`;
         for(const it of res.iterations){
-          const isConverged = Math.abs(it.fc) < parseFloat($('tol').value);
           const tr = document.createElement('tr');
-          tr.className = `odd:bg-white even:bg-slate-50 ${isConverged ? 'highlight-row' : ''}`;
-          tr.innerHTML = `
-            <td class="px-3 py-2 text-center">${it.n}</td>
-            <td class="px-3 py-2 text-center">${formatDecimal(it.a)}</td>
-            <td class="px-3 py-2 text-center">${formatDecimal(it.b)}</td>
-            <td class="px-3 py-2 text-center">${formatDecimal(it.fa)}</td>
-            <td class="px-3 py-2 text-center">${formatDecimal(it.fb)}</td>
-            <td class="px-3 py-2 text-center font-medium text-blue-700">${formatDecimal(it.c)}</td>
-            <td class="px-3 py-2 text-center ${isConverged ? 'font-bold text-green-700' : ''}">${formatDecimal(it.fc)}</td>
-            <td class="px-3 py-2 text-center">${formatDecimal(it.err)}</td>`;
+          tr.innerHTML = `<td>${it.n}</td><td>${formatDecimal(it.a)}</td><td>${formatDecimal(it.b)}</td><td>${formatDecimal(it.fa)}</td><td>${formatDecimal(it.fb)}</td><td>${formatDecimal(it.c)}</td><td>${formatDecimal(it.fc)}</td><td>${formatDecimal(it.err)}</td>`;
           tbody.appendChild(tr);
         }
-      } else if (method === "secant"){
-        thead.innerHTML = `<tr>
-          <th class="px-3 py-2 text-center">Iter</th>
-          <th class="px-3 py-2 text-center">x₁</th>
-          <th class="px-3 py-2 text-center">x₂</th>
-          <th class="px-3 py-2 text-center">f(x₁)</th>
-          <th class="px-3 py-2 text-center">f(x₂)</th>
-          <th class="px-3 py-2 text-center">x₃</th>
-          <th class="px-3 py-2 text-center">f(x₃)</th>
-          <th class="px-3 py-2 text-center">Error</th>
-        </tr>`;
+      } else if(method === "newton"){
+        thead.innerHTML = `<tr><th>Iter</th><th>x</th><th>f(x)</th><th>f'(x)</th><th>xₙ₊₁</th><th>f(xₙ₊₁)</th><th>Error</th></tr>`;
         for(const it of res.iterations){
-          const isConverged = Math.abs(it.fc) < parseFloat($('tol').value);
-          const tr = document.createElement('tr');
-          tr.className = `odd:bg-white even:bg-slate-50 ${isConverged ? 'highlight-row' : ''}`;
-          tr.innerHTML = `
-            <td class="px-3 py-2 text-center">${it.n}</td>
-            <td class="px-3 py-2 text-center">${formatDecimal(it.a)}</td>
-            <td class="px-3 py-2 text-center">${formatDecimal(it.b)}</td>
-            <td class="px-3 py-2 text-center">${formatDecimal(it.fa)}</td>
-            <td class="px-3 py-2 text-center">${formatDecimal(it.fb)}</td>
-            <td class="px-3 py-2 text-center font-medium text-blue-700">${formatDecimal(it.c)}</td>
-            <td class="px-3 py-2 text-center ${isConverged ? 'font-bold text-green-700' : ''}">${formatDecimal(it.fc)}</td>
-            <td class="px-3 py-2 text-center">${formatDecimal(it.err)}</td>`;
+          const tr = document.createElement('tr');          tr.innerHTML = `
+            <td>${it.n}</td>
+            <td>${formatDecimal(it.x)}</td>
+            <td>${formatDecimal(it.fx)}</td>
+            <td>${formatDecimal(it.dfx)}</td>
+            <td class="font-medium text-blue-700">${formatDecimal(it.xnext)}</td>
+            <td>${formatDecimal(it.fxnext)}</td>
+            <td>${formatDecimal(it.err)}</td>`;
           tbody.appendChild(tr);
         }
       }
@@ -402,6 +431,14 @@
       } else if(method === "secant"){
         rows.push(["Iter","x0","x1","f(x0)","f(x1)","x2","f(x2)","Error"]);
         res.iterations.forEach(it=> rows.push([it.n,it.a,it.b,it.fa,it.fb,it.c,it.fc,it.err]));
+      } 
+      else if(method === "fixedPoint"){
+  rows.push(["Iter","x_n","x_next","Error"]);
+  res.iterations.forEach(it=> rows.push([it.n,it.x,it.xnext,it.err]));
+}
+else if(method === "newton"){
+        rows.push(["Iter","x","f(x)","f'(x)","x_next","f(x_next)","Error"]);
+        res.iterations.forEach(it=> rows.push([it.n,it.x,it.fx,it.dfx,it.xnext,it.fxnext,it.err]));
       }
       const csvContent = "data:text/csv;charset=utf-8," + rows.map(r => r.map(v => formatDecimal(v)).join(",")).join("\n");
       const link = document.createElement("a");
