@@ -3,69 +3,251 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AxiomRoot • RootFinder Unified</title>
+  <title>AxiomRoot • SZABIST RootFinder</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjs@11.6.0/lib/browser/math.min.js"></script>
   <style>
     :root {
-      --bg-light: #f6f8fb; --bg-dark: #0b1020;
-      --card-light: #ffffff; --card-dark: #1e293b;
-      --text-light: #0b1020; --text-dark: #e2e8f0;
-      --brand: #2563eb; --brand-2: #06b6d4;
-      --accent: #8b5cf6;
+      /* SZABIST-inspired palette */
+      --bg-light: #f3f6fb;
+      --bg-dark: #020617;
+      --card-light: #ffffff;
+      --card-dark: #0b1120; 
+      --text-light: #020617;
+      --text-dark: #e5e7eb;
+      --brand: #0054a6;   /* SZABIST blue */
+      --brand-2: #0b63ce; /* lighter SZABIST blue */
+      --accent: #fbbf24;  /* golden accent */
     }
-    body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg-light); color: var(--text-light); transition: background .3s, color .3s; }
-    body.dark { background: var(--bg-dark); color: var(--text-dark); }
-    .card { background: var(--card-light); border-radius: 1.25rem; box-shadow: 0 4px 24px rgba(0,0,0,.06); transition: all .3s; border: 1px solid rgba(226,232,240,.5); }
-    body.dark .card { background: var(--card-dark); border-color: rgba(51,65,85,.5); box-shadow: 0 4px 24px rgba(0,0,0,.2); }
-    .card:hover { box-shadow: 0 8px 32px rgba(0,0,0,.1); transform: translateY(-2px); }
-    body.dark .card:hover { box-shadow: 0 8px 32px rgba(0,0,0,.3); }
-    .btn { font-weight: 600; border-radius: .75rem; transition: all .2s; cursor: pointer; }
-    .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,.15); }
-    .btn:active:not(:disabled) { transform: translateY(0); }
-    input, select { border-radius: .75rem; border: 2px solid #e2e8f0; padding: .7rem 1rem; transition: all .2s; background: white; }
-    body.dark input, body.dark select { background: #1e293b; border-color: #334155; color: #e2e8f0; }
-    input:focus, select:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 4px rgba(37,99,235,.15); }
-    body.dark input:focus, body.dark select:focus { border-color: var(--brand-2); box-shadow: 0 0 0 4px rgba(6,182,212,.15); }
-    .brand-grad { background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%); box-shadow: 0 4px 16px rgba(37,99,235,.3); }
-    .brand-grad:hover { box-shadow: 0 6px 24px rgba(37,99,235,.4); }
-    .table-sticky thead { position: sticky; top: 0; background: #f8fafc; box-shadow: 0 2px 8px rgba(0,0,0,.04); z-index: 10; }
-    body.dark .table-sticky thead { background: #0f172a; }
-    tbody tr { transition: background .15s; }
-    tbody tr:hover { background-color: #f1f5f9 !important; }
-    body.dark tbody tr:hover { background-color: #1e293b !important; }
-    .highlight-row { background: rgba(34,197,94,.15) !important; }
-    body.dark .highlight-row { background: rgba(34,197,94,.25) !important; }
-    .spinner{ width:40px; height:40px; border:4px solid #e2e8f0; border-top-color:#3b82f6; border-radius:9999px; animation: spin 1s ease-in-out infinite; }
-    @keyframes spin{ to{ transform: rotate(360deg);} }
-    .calc-btn{ font-size:.875rem; padding:.6rem; border-radius:.6rem; background:#e2e8f0; transition: all .15s; font-weight: 500; cursor: pointer; }
-    .calc-btn:hover{ background:#cbd5e1; transform: translateY(-1px); box-shadow: 0 2px 6px rgba(0,0,0,.08); }
-    .calc-btn:active{ transform: translateY(0); }
-    body.dark .calc-btn{ background:#334155; color:#e2e8f0; }
-    body.dark .calc-btn:hover{ background:#475569; }
-    .chip{ background: linear-gradient(135deg, #f1f5f9, #e2e8f0); color:#334155; border-radius:9999px; padding:.35rem .75rem; font-size:.75rem; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,.05); }
-    body.dark .chip{ background: linear-gradient(135deg, #1e293b, #334155); color:#cbd5e1; }
-    .display{ font-family: ui-monospace, Menlo, Monaco, Consolas, "Courier New", monospace; }
-    .result-box { background: linear-gradient(135deg, #f8fafc, #f1f5f9); border: 2px solid #e2e8f0; transition: all .3s; }
-    .result-box:hover { border-color: var(--brand); box-shadow: 0 4px 12px rgba(37,99,235,.1); }
-    body.dark .result-box { background: linear-gradient(135deg, #1e293b, #0f172a); border-color: #334155; }
-    body.dark .result-box:hover { border-color: var(--brand-2); }
-    header { transition: all .3s; }
-    body.dark header { background: rgba(15,23,42,.9) !important; border-color: rgba(51,65,85,.5) !important; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg-light);
+      color: var(--text-light);
+      transition: background .3s, color .3s;
+    }
+    body.dark {
+      background: var(--bg-dark);
+      color: var(--text-dark);
+    }
+
+    .card {
+      background: var(--card-light);
+      border-radius: 1.25rem;
+      box-shadow: 0 4px 24px rgba(0,0,0,.06);
+      transition: all .3s;
+      border: 1px solid rgba(226,232,240,.5);
+    }
+    body.dark .card {
+      background: var(--card-dark);
+      border-color: rgba(30,64,175,.5);
+      box-shadow: 0 4px 24px rgba(0,0,0,.25);
+    }
+    .card:hover {
+      box-shadow: 0 8px 32px rgba(0,0,0,.12);
+      transform: translateY(-2px);
+    }
+    body.dark .card:hover {
+      box-shadow: 0 8px 32px rgba(0,0,0,.3);
+    }
+
+    .btn {
+      font-weight: 600;
+      border-radius: .75rem;
+      transition: all .2s;
+      cursor: pointer;
+    }
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,.15);
+    }
+    .btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    input, select {
+      border-radius: .75rem;
+      border: 2px solid #e2e8f0;
+      padding: .7rem 1rem;
+      transition: all .2s;
+      background: white;
+    }
+    body.dark input, body.dark select {
+      background: #0b1120;
+      border-color: #1e293b;
+      color: #e2e8f0;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--brand);
+      box-shadow: 0 0 0 4px rgba(0,84,166,.2);
+    }
+    body.dark input:focus, body.dark select:focus {
+      border-color: var(--brand-2);
+      box-shadow: 0 0 0 4px rgba(37,99,235,.25);
+    }
+
+    .brand-grad {
+      background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%);
+      box-shadow: 0 4px 16px rgba(0,84,166,.35);
+    }
+    .brand-grad:hover {
+      box-shadow: 0 6px 24px rgba(0,84,166,.45);
+    }
+
+    .table-sticky thead {
+      position: sticky;
+      top: 0;
+      background: #f8fafc;
+      box-shadow: 0 2px 8px rgba(0,0,0,.04);
+      z-index: 10;
+    }
+    body.dark .table-sticky thead {
+      background: #020617;
+    }
+    tbody tr {
+      transition: background .15s;
+    }
+    tbody tr:hover {
+      background-color: #e5edfb !important;
+    }
+    body.dark tbody tr:hover {
+      background-color: #020b35 !important;
+    }
+    .highlight-row {
+      background: rgba(34,197,94,.15) !important;
+    }
+    body.dark .highlight-row {
+      background: rgba(34,197,94,.25) !important;
+    }
+
+    .spinner {
+      width:40px;
+      height:40px;
+      border:4px solid #e2e8f0;
+      border-top-color:#3b82f6;
+      border-radius:9999px;
+      animation: spin 1s ease-in-out infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .calc-btn {
+      font-size:.875rem;
+      padding:.6rem;
+      border-radius:.6rem;
+      background:#e2e8f0;
+      transition: all .15s;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .calc-btn:hover {
+      background:#cbd5e1;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0,0,0,.08);
+    }
+    .calc-btn:active {
+      transform: translateY(0);
+    }
+    body.dark .calc-btn {
+      background:#1e293b;
+      color:#e2e8f0;
+    }
+    body.dark .calc-btn:hover {
+      background:#334155;
+    }
+
+    .chip {
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color:#f9fafb;
+      border-radius:9999px;
+      padding:.35rem .8rem;
+      font-size:.75rem;
+      font-weight: 600;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      box-shadow: 0 2px 6px rgba(0,84,166,.45);
+    }
+    body.dark .chip {
+      background: linear-gradient(135deg, var(--brand-2), #1d4ed8);
+      color:#e5e7eb;
+    }
+
+    .display {
+      font-family: ui-monospace, Menlo, Monaco, Consolas, "Courier New", monospace;
+      letter-spacing: .02em;
+    }
+
+    .result-box {
+      background: linear-gradient(135deg, #011529, #ffffff);
+      border: 2px solid #000000;
+      transition: all .3s;
+    }
+    .result-box:hover {
+      border-color: var(--brand);
+      box-shadow: 0 4px 12px rgba(37,99,235,.15);
+    }
+    body.dark .result-box {
+      background: linear-gradient(135deg, #020617, #0b1120);
+      border-color: #1d4ed8;
+    }
+    body.dark .result-box:hover {
+      border-color: var(--brand-2);
+    }
+
+    header {
+      transition: all .3s;
+    }
+    /* SZABIST gradient header */
+    header.szabist-header {
+      background: linear-gradient(90deg, var(--brand) 0%, var(--brand-2) 55%, #020617 100%);
+      color: #e5e7eb;
+      border-bottom: 1px solid rgba(15,23,42,.7);
+    }
+    body.dark header.szabist-header {
+      background: linear-gradient(90deg, #020617 0%, #020617 60%, #020617 100%) !important;
+      border-color: rgba(30,64,175,.8) !important;
+    }
+
+    header h1 {
+      color: #f9fafb;
+    }
+    header p {
+      color: #e5e7eb;
+    }
+    header span.text-slate-700 {
+      color: #facc15;
+    }
+
+    #themeToggle {
+      border-color: rgba(226,232,240,.6);
+      background: rgba(15,23,42,.18);
+      color: #e5e7eb;
+    }
+    body.dark #themeToggle {
+      background: rgba(15,23,42,.85);
+      border-color: #1d4ed8;
+      color: #e5e7eb;
+    }
   </style>
 </head>
 <body class="min-h-screen">
   <!-- Header -->
-  <header class="bg-white/90 backdrop-blur border-b border-slate-200">
+  <header class="szabist-header backdrop-blur border-b border-slate-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <div class="h-10 w-10 rounded-xl brand-grad flex items-center justify-center text-white font-bold">AR</div>
         <div>
-          <h1 class="text-xl font-extrabold tracking-tight">AxiomRoot <span class="text-slate-400 text-sm font-medium">• RootFinder Unified</span></h1>
-          <p class="text-[11px] text-slate-500 -mt-1">Created by <span class="font-semibold text-slate-700">Mustafa Muhammad</span></p>
+          <h1 class="text-xl font-extrabold tracking-tight">
+            AxiomRoot <span class="text-slate-200 text-sm font-medium">• SZABIST RootFinder</span>
+          </h1>
+          <p class="text-[11px] text-slate-100 -mt-1">
+            Created by <span class="font-semibold text-slate-50">Mustafa Muhammad</span>
+          </p>
         </div>
       </div>
-      <button id="themeToggle" class="btn px-3 py-2 border border-slate-200 text-slate-700">🌙 Dark mode</button>
+      <button id="themeToggle" class="btn px-3 py-2 border border-slate-200">🌙 Dark mode</button>
     </div>
   </header>
 
@@ -87,7 +269,7 @@
             <button class="calc-btn" onclick="insert('abs(')">|x|</button>
             <button class="calc-btn" onclick="insert('ln(')">ln</button>
             <button class="calc-btn" onclick="insert('log(')">log</button>
-                        <button class="calc-btn" onclick="insert('log10(')">log</button>
+            <button class="calc-btn" onclick="insert('log10(')">log</button>
             <button class="calc-btn" onclick="insert('π')">π</button>
             <button class="calc-btn" onclick="insert('e')">e</button>
             <button class="calc-btn" onclick="insert('^')">^</button>
@@ -113,7 +295,11 @@
           </div>
           <!-- Right: Input + method + clear -->
           <div class="space-y-3">
-            <input id="expr" class="w-full display-xl bg-white border border-slate-200 rounded-xl px-3 py-2" placeholder="e.g., x^3-2*x-5" />
+            <input
+              id="expr"
+              class="w-full display bg-white border-2 border-slate-200 rounded-xl px-4 py-4 text-xl shadow-sm"
+              placeholder="e.g., x^3 - 2*x - 5"
+            />
             <label class="text-xs text-slate-600">Method</label>
             <select id="method" class="w-full px-3 py-2 rounded-xl border border-slate-200">
               <option value="bisection">Bisection</option>
@@ -122,7 +308,7 @@
               <option value="secant">Secant</option>
               <option value="newton">Newton</option>
             </select>
-            <button id="clearExpr" class="btn px-3 py-2 bg-slate-900 text-white w-full">Clear</button>
+            <button id="clearExpr" class="btn px-3 py-2 bg-slate-900 text-white w-full rounded-xl">Clear</button>
             <div class="mt-2 text-xs text-slate-600">
               <p class="mb-1"><strong>Quick inserts:</strong></p>
               <div class="flex flex-wrap gap-2">
@@ -175,17 +361,17 @@
             <span id="iterCount" class="chip">0 iterations</span>
           </div>
           <div class="grid sm:grid-cols-3 gap-3">
-            <div class="rounded-xl border border-slate-200 p-4 bg-white">
+            <div class="rounded-xl result-box p-4">
               <p class="text-[11px] text-slate-500">Root</p>
-              <p id="rootVal" class="display text-2xl text-slate-900"></p>
+              <p id="rootVal" class="display text-2xl text-slate-900 dark:text-slate-100"></p>
             </div>
-            <div class="rounded-xl border border-slate-200 p-4 bg-white">
+            <div class="rounded-xl result-box p-4">
               <p class="text-[11px] text-slate-500">f(root)</p>
-              <p id="fRoot" class="display text-2xl text-slate-900"></p>
+              <p id="fRoot" class="display text-2xl text-slate-900 dark:text-slate-100"></p>
             </div>
-            <div class="rounded-xl border border-slate-200 p-4 bg-white">
+            <div class="rounded-xl result-box p-4">
               <p class="text-[11px] text-slate-500">Final Error</p>
-              <p id="errVal" class="display text-2xl text-slate-900"></p>
+              <p id="errVal" class="display text-2xl text-slate-900 dark:text-slate-100"></p>
             </div>
           </div>
         </div>
@@ -216,12 +402,18 @@
       </section>
     </div>
 
-    <footer class="mt-8 text-center text-xs text-slate-500">© AxiomRoot — Unified RootFinder by <span class="text-slate-700 font-medium">Mustafa Muhammad</span></footer>
+    <footer class="mt-8 text-center text-xs text-slate-500">
+      © AxiomRoot — Unified RootFinder for <span class="text-slate-700 font-medium">SZABIST</span> by
+      <span class="text-slate-800 font-medium">Mustafa Muhammad</span>
+    </footer>
   </main>
 
-    <script>
+  <script>
     const $ = (id) => document.getElementById(id);
-    function formatDecimal(v){ if(!isFinite(v)) return String(v); return Number.parseFloat(Number(v).toFixed(10)); }
+    function formatDecimal(v){
+      if(!isFinite(v)) return String(v);
+      return Number.parseFloat(Number(v).toFixed(10));
+    }
 
     // Insert / quick set / clear
     function insert(text) {
@@ -253,7 +445,7 @@
       localStorage.setItem('axiom-theme', mode);
     }
 
-    // ===== Algorithms
+    // ===== Algorithms (unchanged math logic)
     function bisection(fn, a, b, tol, maxit){
       let fa = fn.evaluate({x:a}), fb = fn.evaluate({x:b});
       if(fa*fb >= 0) throw new Error("f(a) and f(b) must have opposite signs");
@@ -265,18 +457,19 @@
       }
       return { root:c, froot:fc, err, iterations };
     }
+
     function fixedPoint(fn, a, tol, maxit){
-  let x = a, iterations=[], n=0, err=Infinity;
-  while(n<maxit && err>tol){
-    n++;
-    const xnext = fn.evaluate({x});
-    err = Math.abs(xnext - x);
-    iterations.push({n,x,xnext,err});
-    x = xnext;
-  }
-  const froot = fn.evaluate({x});
-  return { root:x, froot, err, iterations };
-}
+      let x = a, iterations=[], n=0, err=Infinity;
+      while(n<maxit && err>tol){
+        n++;
+        const xnext = fn.evaluate({x});
+        err = Math.abs(xnext - x);
+        iterations.push({n,x,xnext,err});
+        x = xnext;
+      }
+      const froot = fn.evaluate({x});
+      return { root:x, froot, err, iterations };
+    }
 
     function falsePosition(fn, a, b, tol, maxit){
       let fa = fn.evaluate({x:a}), fb = fn.evaluate({x:b});
@@ -292,6 +485,7 @@
       }
       return { root:c, froot:fc, err:Math.abs(c-prevC), iterations };
     }
+
     function secant(fn, a, b, tol, maxit){
       let fa = fn.evaluate({x:a}), fb = fn.evaluate({x:b});
       let iterations=[], c=a, fc=fa, prevC=a, n=0;
@@ -304,23 +498,23 @@
       }
       return { root:c, froot:fc, err:Math.abs(c-prevC), iterations };
     }
-   function newton(fn, exprStr, a, tol, maxit){
-  const derivativeNode = math.derivative(exprStr, 'x');
-  const derivative = derivativeNode.compile();
-  let x = a, fx = fn.evaluate({x}), iterations=[], n=0, err=Infinity;
-  while(n<maxit && err>tol){
-    n++;
-    const dfx = derivative.evaluate({x});
-    if(dfx === 0) throw new Error("Derivative is zero, cannot continue Newton's method");
-    const xnext = x - fx/dfx;
-    const fxnext = fn.evaluate({x:xnext});
-    err = Math.abs(xnext - x);
-    iterations.push({n,x,fx,dfx,xnext,fxnext,err});
-    x = xnext; fx = fxnext;
-  }
-  return { root:x, froot:fx, err, iterations };
-}
 
+    function newton(fn, exprStr, a, tol, maxit){
+      const derivativeNode = math.derivative(exprStr, 'x');
+      const derivative = derivativeNode.compile();
+      let x = a, fx = fn.evaluate({x}), iterations=[], n=0, err=Infinity;
+      while(n<maxit && err>tol){
+        n++;
+        const dfx = derivative.evaluate({x});
+        if(dfx === 0) throw new Error("Derivative is zero, cannot continue Newton's method");
+        const xnext = x - fx/dfx;
+        const fxnext = fn.evaluate({x:xnext});
+        err = Math.abs(xnext - x);
+        iterations.push({n,x,fx,dfx,xnext,fxnext,err});
+        x = xnext; fx = fxnext;
+      }
+      return { root:x, froot:fx, err, iterations };
+    }
 
     // ===== Calculate handler
     $('calc').addEventListener('click', ()=> {
@@ -334,7 +528,7 @@
         alert('Please provide f(x), initial guess/bounds, tolerance, and max iterations.');
         return;
       }
-      if ((method!=="newton") && a >= b) {
+      if ((method!=="newton") && (method!=="fixedPoint") && a >= b) {
         alert('Require a < b for interval methods.');
         return;
       }
@@ -344,10 +538,17 @@
         try {
           const fn = math.compile(correctedFuncStr);
           let res;
-          if (method === "bisection") res = bisection(fn, a, b, tol, maxit);
-          else if (method === "falsePosition") res = falsePosition(fn, a, b, tol, maxit);
-          else if (method === "secant") res = secant(fn, a, b, tol, maxit);
-          else if (method === "newton") res = newton(fn, correctedFuncStr, a, tol, maxit);
+          if (method === "bisection") {
+            res = bisection(fn, a, b, tol, maxit);
+          } else if (method === "fixedPoint") {
+            res = fixedPoint(fn, a, tol, maxit);
+          } else if (method === "falsePosition") {
+            res = falsePosition(fn, a, b, tol, maxit);
+          } else if (method === "secant") {
+            res = secant(fn, a, b, tol, maxit);
+          } else if (method === "newton") {
+            res = newton(fn, correctedFuncStr, a, tol, maxit);
+          }
           renderResults(res, method);
         } catch (e) {
           alert('Error: ' + e.message);
@@ -375,23 +576,20 @@
           tr.innerHTML = `<td>${it.n}</td><td>${formatDecimal(it.a)}</td><td>${formatDecimal(it.b)}</td><td>${formatDecimal(it.c)}</td><td>${formatDecimal(it.fc)}</td><td>${formatDecimal(it.err)}</td>`;
           tbody.appendChild(tr);
         }
-   
-
-        
-      } 
-         else if(method === "fixedPoint"){
-  thead.innerHTML = `<tr><th>Iter</th><th>xₙ</th><th>xₙ₊₁</th><th>Error</th></tr>`;
-  for(const it of res.iterations){
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${it.n}</td>
-      <td>${formatDecimal(it.x)}</td>
-      <td class="font-medium text-blue-700">${formatDecimal(it.xnext)}</td>
-      <td>${formatDecimal(it.err)}</td>`;
-    tbody.appendChild(tr);
-  }
-}
- else if(method === "falsePosition" || method === "secant"){
+      }
+      else if(method === "fixedPoint"){
+        thead.innerHTML = `<tr><th>Iter</th><th>xₙ</th><th>xₙ₊₁</th><th>Error</th></tr>`;
+        for(const it of res.iterations){
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${it.n}</td>
+            <td>${formatDecimal(it.x)}</td>
+            <td class="font-medium text-blue-700 dark:text-blue-300">${formatDecimal(it.xnext)}</td>
+            <td>${formatDecimal(it.err)}</td>`;
+          tbody.appendChild(tr);
+        }
+      }
+      else if(method === "falsePosition" || method === "secant"){
         thead.innerHTML = `<tr><th>Iter</th><th>x₁</th><th>x₂</th><th>f(x₁)</th><th>f(x₂)</th><th>x₃</th><th>f(x₃)</th><th>Error</th></tr>`;
         for(const it of res.iterations){
           const tr = document.createElement('tr');
@@ -401,12 +599,13 @@
       } else if(method === "newton"){
         thead.innerHTML = `<tr><th>Iter</th><th>x</th><th>f(x)</th><th>f'(x)</th><th>xₙ₊₁</th><th>f(xₙ₊₁)</th><th>Error</th></tr>`;
         for(const it of res.iterations){
-          const tr = document.createElement('tr');          tr.innerHTML = `
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
             <td>${it.n}</td>
             <td>${formatDecimal(it.x)}</td>
             <td>${formatDecimal(it.fx)}</td>
             <td>${formatDecimal(it.dfx)}</td>
-            <td class="font-medium text-blue-700">${formatDecimal(it.xnext)}</td>
+            <td class="font-medium text-blue-700 dark:text-blue-300">${formatDecimal(it.xnext)}</td>
             <td>${formatDecimal(it.fxnext)}</td>
             <td>${formatDecimal(it.err)}</td>`;
           tbody.appendChild(tr);
@@ -431,15 +630,14 @@
       } else if(method === "secant"){
         rows.push(["Iter","x0","x1","f(x0)","f(x1)","x2","f(x2)","Error"]);
         res.iterations.forEach(it=> rows.push([it.n,it.a,it.b,it.fa,it.fb,it.c,it.fc,it.err]));
-      } 
-      else if(method === "fixedPoint"){
-  rows.push(["Iter","x_n","x_next","Error"]);
-  res.iterations.forEach(it=> rows.push([it.n,it.x,it.xnext,it.err]));
-}
-else if(method === "newton"){
+      } else if(method === "fixedPoint"){
+        rows.push(["Iter","x_n","x_next","Error"]);
+        res.iterations.forEach(it=> rows.push([it.n,it.x,it.xnext,it.err]));
+      } else if(method === "newton"){
         rows.push(["Iter","x","f(x)","f'(x)","x_next","f(x_next)","Error"]);
         res.iterations.forEach(it=> rows.push([it.n,it.x,it.fx,it.dfx,it.xnext,it.fxnext,it.err]));
       }
+
       const csvContent = "data:text/csv;charset=utf-8," + rows.map(r => r.map(v => formatDecimal(v)).join(",")).join("\n");
       const link = document.createElement("a");
       link.href = encodeURI(csvContent);
