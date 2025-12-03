@@ -657,18 +657,27 @@
           return { root:c, froot:fc, err:Math.abs(c-prevC), iterations };
         }
 
-        function secant(fn, a, b, tol, maxit){
-          let fa = fn.evaluate({x:a}), fb = fn.evaluate({x:b});
-          let iterations=[], c=a, fc=fa, prevC=a, n=0;
-          while(n<maxit){
-            n++; c = b - fb * (b - a) / (fb - fa); fc = fn.evaluate({x:c});
-            let err = Math.abs(c - prevC);
-            iterations.push({n,a,b,fa,fb,c,fc,err});
-            if(Math.abs(fc)<tol || err<tol) break;
-            a = b; fa = fb; b = c; fb = fc; prevC = c;
+          function secant(fn, a, b, tol, maxit) {
+              let fa = fn.evaluate({ x: a }), fb = fn.evaluate({ x: b });
+              let iterations = [], c = b, fc = fb, n = 0;  // Start with c=b
+
+              while (n < maxit) {
+                  n++;
+                  const prevC = c;  // Save previous value BEFORE computing new one
+                  c = b - fb * (b - a) / (fb - fa);
+                  fc = fn.evaluate({ x: c });
+                  const err = Math.abs(c - prevC);  // Now error is correct
+
+                  iterations.push({ n, a, b, fa, fb, c, fc, err });
+
+                  if (Math.abs(fc) < tol || err < tol) break;
+
+                  // Update for next iteration
+                  a = b; fa = fb;
+                  b = c; fb = fc;
+              }
+              return { root: c, froot: fc, err: Math.abs(c - b), iterations };
           }
-          return { root:c, froot:fc, err:Math.abs(c-prevC), iterations };
-        }
 
         function newton(fn, exprStr, a, tol, maxit){
           const derivativeNode = math.derivative(exprStr, 'x');
@@ -695,14 +704,18 @@
           const tol = parseFloat($('tol').value), maxit = parseInt(($('maxit').value || '100'), 10);
           const method = $('method').value;
 
-          if (!funcStr || Number.isNaN(a) || Number.isNaN(tol) || Number.isNaN(maxit)) {
-            alert('Please provide f(x), initial guess/bounds, tolerance, and max iterations.');
-            return;
-          }
-          if ((method!=="newton") && (method!=="fixedPoint") && a >= b) {
-            alert('Require a < b for interval methods.');
-            return;
-          }
+            if (!funcStr || Number.isNaN(a) || Number.isNaN(tol) || Number.isNaN(maxit)) {
+                alert('Please provide f(x), initial guess/bounds, tolerance, and max iterations.');
+                return;
+            }
+            if ((method !== "newton") && (method !== "fixedPoint") && Number.isNaN(b)) {
+                alert('Please provide upper bound (b) for interval methods.');
+                return;
+            }
+            if ((method !== "newton") && (method !== "fixedPoint") && a >= b) {
+                alert('Require a < b for interval methods.');
+                return;
+            }
 
             $('loader').classList.remove('hidden');
             setTimeout(() => {
